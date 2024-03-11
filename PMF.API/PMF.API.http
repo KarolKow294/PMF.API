@@ -1,0 +1,6 @@
+@PMF.API_HostAddress = http://localhost:5204
+
+GET {{PMF.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
