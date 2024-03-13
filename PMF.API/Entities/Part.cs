@@ -8,13 +8,10 @@
         public int Quantity { get; set; }
         public string Material { get; set; }
         public int SurfaceId { get; set; }
-        public IFormFile Drawing { get; set; }
+        public byte[] Drawing { get; set; }
 
-        public QuickResponseCode QrCode { get; set; }
-        public Storage ActualStorage { get; set; }
-        public int ActualStorageId { get; set; }
-        public Storage DestinationStorage { get; set; }
-        public int DestinationStorageId { get; set; }
+        public string QrCodeData { get; set; }
+        public List<Storage> Storages { get; set; } = new ();
         public Order Order { get; set; }
         public int OrderId { get; set; }
     }

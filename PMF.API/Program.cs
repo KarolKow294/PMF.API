@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PMF.API.Entities;
 using PMF.API.Services;
+using System.Reflection;
 
 namespace PMF.API
 {
@@ -16,7 +17,7 @@ namespace PMF.API
             builder.Services.AddControllers();
 
             builder.Services.AddScoped<IOrderService, OrderService>();
-
+            builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddCors(options =>

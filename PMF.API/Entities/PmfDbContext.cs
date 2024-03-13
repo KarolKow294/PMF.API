@@ -2,7 +2,7 @@
 
 namespace PMF.API.Entities
 {
-    public class PmfDbContext(DbContextOptions<PmfDbContext> options) : DbContext
+    public class PmfDbContext(DbContextOptions<PmfDbContext> options) : DbContext(options)
     {
         public DbSet<Order> Order { get; set; }
         public DbSet<Part> Part { get; set; }
@@ -10,37 +10,36 @@ namespace PMF.API.Entities
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Order>()
-                .Property(u => u.Name)
-                .IsRequired();
+            modelBuilder.Entity<Order>(eb =>
+            {
+                eb.Property(o => o.Name).IsRequired();
+                eb.Property(o => o.Number).IsRequired();
+                eb.HasMany(o => o.Parts).WithOne(p => p.Order).HasForeignKey(p => p.OrderId);
+            });
 
-            modelBuilder.Entity<Order>()
-                .Property(u => u.Number)
-                .IsRequired();
 
-            modelBuilder.Entity<Part>()
-                .Property(u => u.Code)
-                .IsRequired();
+            modelBuilder.Entity<Part>(eb =>
+            {
+                eb.Property(p => p.Code).IsRequired();
+                eb.Property(p => p.Quantity).IsRequired();
+                eb.Property(p => p.SurfaceId).IsRequired();
+                eb.Property(p => p.OrderId).IsRequired();
+                eb.HasMany(p => p.Storages).WithMany(s => s.Parts)
+                .UsingEntity<PartStorage>(
+                    p => p.HasOne(ps => ps.Storage)
+                    .WithMany()
+                    .HasForeignKey(ps => ps.StorageId),
 
-            modelBuilder.Entity<Part>()
-                .Property(u => u.Quantity)
-                .IsRequired();
+                    p => p.HasOne(ps => ps.Part)
+                    .WithMany()
+                    .HasForeignKey(ps => ps.PartId),
 
-            modelBuilder.Entity<Part>()
-                .Property(u => u.SurfaceId)
-                .IsRequired();
-
-            modelBuilder.Entity<Part>()
-                .Property(u => u.ActualStorageId)
-                .IsRequired();
-
-            modelBuilder.Entity<Part>()
-                .Property(u => u.DestinationStorageId)
-                .IsRequired();
-
-            modelBuilder.Entity<Part>()
-                .Property(u => u.OrderId)
-                .IsRequired();
+                    ps =>
+                    {
+                        ps.HasKey(x => new { x.StorageId, x.PartId });
+                        ps.Property(x => x.Type).IsRequired();
+                    });
+            });
 
             modelBuilder.Entity<Storage>()
                 .Property(u => u.Name)
