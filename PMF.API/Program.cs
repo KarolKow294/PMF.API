@@ -1,4 +1,8 @@
 
+using Microsoft.EntityFrameworkCore;
+using PMF.API.Entities;
+using PMF.API.Services;
+
 namespace PMF.API
 {
     public class Program
@@ -10,8 +14,22 @@ namespace PMF.API
             // Add services to the container.
             builder.Services.AddAuthorization();
             builder.Services.AddControllers();
+
+            builder.Services.AddScoped<IOrderService, OrderService>();
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("FrontEndClient", policyBuilder =>
+                policyBuilder.AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .WithOrigins(builder.Configuration["AllowedOrigins"])
+                );
+            });
+
+            builder.Services.AddDbContext<PmfDbContext>
+                (options => options.UseSqlServer(builder.Configuration.GetConnectionString("PmfDbConnection")));
 
             var app = builder.Build();
 
@@ -26,6 +44,7 @@ namespace PMF.API
 
             app.UseAuthorization();
             app.MapControllers();
+            app.UseCors("FrontEndClient");
 
             app.Run();
         }

@@ -1,21 +1,19 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using PMF.API.Entities;
+﻿using Microsoft.AspNetCore.Mvc;
+using PMF.API.Models;
+using PMF.API.Services;
 
 namespace PMF.API.Controllers
 {
-    [Route("orders")]
+    [Route("api/orders")]
     [ApiController]
-    public class OrderController : ControllerBase
+    public class OrderController(IOrderService orderService) : ControllerBase
     {
         [HttpGet]
-        public ActionResult<List<Part>> GetAll()
+        public ActionResult<List<OrderDto>> GetAll()
         {
-            //var restaurantsDtos = _restaurantService.GetAll(query);
+            var ordersDtos = orderService.GetAll();
 
-            //return Ok(restaurantsDtos);
-
-            return Ok("wszystko ok");
+            return Ok(ordersDtos);
         }
     }
 }
