@@ -9,8 +9,8 @@
         public string Material { get; set; }
         public int SurfaceId { get; set; }
         public byte[] Drawing { get; set; }
-
         public string QrCodeData { get; set; }
+
         public List<Storage> Storages { get; set; } = new ();
         public Order Order { get; set; }
         public int OrderId { get; set; }

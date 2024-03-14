@@ -1,4 +1,5 @@
 
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PMF.API.Entities;
 using PMF.API.Services;
@@ -17,6 +18,11 @@ namespace PMF.API
             builder.Services.AddControllers();
 
             builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddSingleton<QrCodeService>();
+            builder.Services.AddSingleton(provider => new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new OrderMappingProfile(provider.GetService<QrCodeService>()));
+            }).CreateMapper());
             builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

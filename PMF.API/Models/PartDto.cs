@@ -11,7 +11,7 @@ namespace PMF.API.Models
         public string Material { get; set; }
         public string Surface { get; set; }
         public IFormFile Drawing { get; set; }
-        public Bitmap QrImage { get; set; }
+        public string QrImage { get; set; }
         public string ActualStorage { get; set; }
         public string DestinationStorage { get; set; }
     }
