@@ -12,7 +12,7 @@ namespace PMF.API
             CreateMap<Part, PartDto>()
                 .ForMember(d => d.Surface, c => c.MapFrom(p => p.SurfaceId == (int)SurfaceType.Painted
                 ? SurfaceType.Painted.ToString() : SurfaceType.Galvanised.ToString()))
-                .ForMember(d => d.QrImage, c => c.MapFrom(p => qrCodeService.GenerateQrCode(p.QrCodeData)))
+                .ForMember(d => d.QrDataImage, c => c.MapFrom(p => qrCodeService.GenerateQrCode(p.QrCodeData)))
                 .ForMember(d => d.ActualStorage, c => c.MapFrom(p => p.Storages.FirstOrDefault().Name))
                 .ForMember(d => d.DestinationStorage, c => c.MapFrom(p => p.Storages.LastOrDefault().Name));
 

@@ -18,6 +18,7 @@ namespace PMF.API
             builder.Services.AddControllers();
 
             builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IStorageService, StorageService>();
             builder.Services.AddSingleton<QrCodeService>();
             builder.Services.AddSingleton(provider => new MapperConfiguration(cfg =>
             {

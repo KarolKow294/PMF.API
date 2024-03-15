@@ -7,6 +7,7 @@ namespace PMF.API.Entities
         public DbSet<Order> Order { get; set; }
         public DbSet<Part> Part { get; set; }
         public DbSet<Storage> Storage { get; set; }
+        public DbSet<PartStorage> PartStorage { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

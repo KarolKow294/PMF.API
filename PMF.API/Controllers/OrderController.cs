@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PMF.API.Entities;
 using PMF.API.Models;
 using PMF.API.Services;
 
@@ -14,6 +15,14 @@ namespace PMF.API.Controllers
             var ordersDtos = orderService.GetAll();
 
             return Ok(ordersDtos);
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult Update([FromBody] UpdateOrderDto storageAfterChange, [FromRoute] int id)
+        {
+            orderService.Update(id, storageAfterChange);
+
+            return Ok();
         }
     }
 }
