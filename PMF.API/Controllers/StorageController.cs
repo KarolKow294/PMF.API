@@ -9,9 +9,9 @@ namespace PMF.API.Controllers
     public class StorageController(IStorageService storageService) : ControllerBase
     {
         [HttpGet]
-        public ActionResult<List<OrderDto>> GetAll()
+        public async Task<ActionResult<List<OrderDto>>> GetAllAsync()
         {
-            var storages = storageService.GetAll();
+            var storages = await storageService.GetAllAsync();
 
             return Ok(storages);
         }

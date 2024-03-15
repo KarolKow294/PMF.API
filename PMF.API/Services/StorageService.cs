@@ -7,11 +7,11 @@ namespace PMF.API.Services
 {
     public class StorageService(PmfDbContext dbContext, IMapper mapper) : IStorageService
     {
-        public List<Storage> GetAll()
+        public async Task<List<Storage>> GetAllAsync()
         {
-            var storages = dbContext
+            var storages = await dbContext
             .Storage
-            .ToList();
+            .ToListAsync();
 
             return storages;
         }

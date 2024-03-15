@@ -10,17 +10,25 @@ namespace PMF.API.Controllers
     public class OrderController(IOrderService orderService) : ControllerBase
     {
         [HttpGet]
-        public ActionResult<List<OrderDto>> GetAll()
+        public async Task<ActionResult<List<OrderDto>>> GetAllAsync()
         {
-            var ordersDtos = orderService.GetAll();
+            var ordersDtos = await orderService.GetAllAsync();
 
             return Ok(ordersDtos);
         }
 
-        [HttpPut("{id}")]
-        public ActionResult Update([FromBody] UpdateOrderDto storageAfterChange, [FromRoute] int id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<List<PartDto>>> GetByIdAsync([FromRoute] int id)
         {
-            orderService.Update(id, storageAfterChange);
+            var partsDtos = await orderService.GetByIdAsync(id);
+
+            return Ok(partsDtos);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateAsync([FromBody] UpdateOrderDto storageAfterChange, [FromRoute] int id)
+        {
+            await orderService.UpdateAsync(id, storageAfterChange);
 
             return Ok();
         }

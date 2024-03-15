@@ -4,6 +4,6 @@ namespace PMF.API.Services
 {
     public interface IStorageService
     {
-        List<Storage> GetAll();
+        Task<List<Storage>> GetAllAsync();
     }
 }

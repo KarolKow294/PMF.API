@@ -9,26 +9,39 @@ namespace PMF.API.Services
 {
     public class OrderService(PmfDbContext dbContext, IMapper mapper) : IOrderService
     {
-        public List<OrderDto> GetAll()
+        public async Task<List<OrderDto>> GetAllAsync()
         {
-            var parts = dbContext
+            var parts = await dbContext
             .Part
             .Include(r => r.Storages)
-            .ToList();
+            .ToListAsync();
 
             var partDtos = mapper.Map<List<PartDto>>(parts);
 
-            var orders = dbContext
+            var orders = await dbContext
             .Order
             .Include(r => r.Parts)
-            .ToList();
+            .ToListAsync();
 
             var orderDtos = mapper.Map<List<OrderDto>>(orders);
 
             return orderDtos;
         }
 
-        public void Update(int partId, UpdateOrderDto storageAfterChange)
+        public async Task<List<PartDto>> GetByIdAsync(int orderId)
+        {
+            var parts = await dbContext
+                .Part
+                .Include(r => r.Storages)
+                .Where(r => r.OrderId == orderId)
+                .ToListAsync();
+
+            var partDtos = mapper.Map<List<PartDto>>(parts);
+
+            return partDtos;
+        }
+
+        public async Task UpdateAsync(int partId, UpdateOrderDto storageAfterChange)
         {
             var newPartStorage = new PartStorage()
             {
@@ -37,16 +50,16 @@ namespace PMF.API.Services
                 Type = storageAfterChange.Type,
             };
 
-            var oldStoragePart = dbContext
+            var oldStoragePart = await dbContext
                 .PartStorage
-                .FirstOrDefault(r => r.PartId == partId && r.Type == storageAfterChange.Type);
+                .FirstOrDefaultAsync(r => r.PartId == partId && r.Type == storageAfterChange.Type);
 
             if (oldStoragePart == null)
                 throw new Exception("PartStorage not found");
 
             dbContext.PartStorage.Add(newPartStorage);
             dbContext.PartStorage.Remove(oldStoragePart);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
         }
     }
 }

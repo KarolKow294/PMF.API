@@ -14,5 +14,6 @@ namespace PMF.API.Models
         public string QrDataImage { get; set; }
         public string ActualStorage { get; set; }
         public string DestinationStorage { get; set; }
+        public int OrderId { get; set; }
     }
 }

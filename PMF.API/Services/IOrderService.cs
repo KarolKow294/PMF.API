@@ -4,7 +4,8 @@ namespace PMF.API.Services
 {
     public interface IOrderService
     {
-        List<OrderDto> GetAll();
-        void Update(int partId, UpdateOrderDto storageAfterChange);
+        Task<List<OrderDto>> GetAllAsync();
+        Task<List<PartDto>> GetByIdAsync(int orderId);
+        Task UpdateAsync(int partId, UpdateOrderDto storageAfterChange);
     }
 }
