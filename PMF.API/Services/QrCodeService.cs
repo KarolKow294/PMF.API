@@ -1,4 +1,5 @@
-﻿using QRCoder;
+﻿using PMF.API.Entities;
+using QRCoder;
 using System.Drawing;
 
 namespace PMF.API.Services
@@ -24,6 +25,12 @@ namespace PMF.API.Services
                 string base64String = Convert.ToBase64String(imageBytes);
                 return base64String;
             }
+        }
+
+        public string GenerateQrCodeData(Part part)
+        {
+            var qrCodeData = $"localhost:3000/Orders/{part.OrderId}?part={part.Id}";
+            return qrCodeData;
         }
     }
 }

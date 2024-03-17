@@ -10,7 +10,7 @@ namespace PMF.API.Models
         public int Quantity { get; set; }
         public string Material { get; set; }
         public string Surface { get; set; }
-        public IFormFile Drawing { get; set; }
+        public byte[] Drawing { get; set; }
         public string QrDataImage { get; set; }
         public string ActualStorage { get; set; }
         public string DestinationStorage { get; set; }

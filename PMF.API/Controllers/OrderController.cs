@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PMF.API.Entities;
 using PMF.API.Models;
 using PMF.API.Services;
+using System.Security.Claims;
 
 namespace PMF.API.Controllers
 {
@@ -18,19 +20,35 @@ namespace PMF.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<List<PartDto>>> GetByIdAsync([FromRoute] int id)
+        public async Task<ActionResult<List<PartDto>>> GetPartsByOrderIdAsync([FromRoute] int id)
         {
-            var partsDtos = await orderService.GetByIdAsync(id);
+            var partsDtos = await orderService.GetPartsByOrderIdAsync(id);
 
             return Ok(partsDtos);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateAsync([FromBody] UpdateOrderDto storageAfterChange, [FromRoute] int id)
+        [HttpPost("part")]
+        public async Task<ActionResult> CreatePartAsync([FromBody] CreatePartDto newPartDto)
         {
-            await orderService.UpdateAsync(id, storageAfterChange);
+            await orderService.CreatePartAsync(newPartDto);
+
+            return Created();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdatePartAsync([FromBody] UpdateOrderDto storageAfterChange, [FromRoute] int id)
+        {
+            await orderService.UpdatePartAsync(id, storageAfterChange);
 
             return Ok();
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeletePartsAsync([FromBody] int[] partsId)
+        {
+            await orderService.DeletePartsAsync(partsId);
+
+            return NoContent();
         }
     }
 }

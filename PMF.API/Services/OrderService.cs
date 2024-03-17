@@ -7,7 +7,7 @@ using PMF.API.Models;
 
 namespace PMF.API.Services
 {
-    public class OrderService(PmfDbContext dbContext, IMapper mapper) : IOrderService
+    public class OrderService(PmfDbContext dbContext, IMapper mapper, QrCodeService qrService) : IOrderService
     {
         public async Task<List<OrderDto>> GetAllAsync()
         {
@@ -28,7 +28,7 @@ namespace PMF.API.Services
             return orderDtos;
         }
 
-        public async Task<List<PartDto>> GetByIdAsync(int orderId)
+        public async Task<List<PartDto>> GetPartsByOrderIdAsync(int orderId)
         {
             var parts = await dbContext
                 .Part
@@ -41,7 +41,40 @@ namespace PMF.API.Services
             return partDtos;
         }
 
-        public async Task UpdateAsync(int partId, UpdateOrderDto storageAfterChange)
+        public async Task CreatePartAsync(CreatePartDto newPartDto)
+        {
+            var newPart = mapper.Map<Part>(newPartDto);
+            dbContext.Part.Add(newPart);
+            await dbContext.SaveChangesAsync();
+
+            var qrCodeData = qrService.GenerateQrCodeData(newPart);
+            newPart.QrCodeData = qrCodeData;
+
+            var partStorages = await dbContext
+                .PartStorage
+                .ToListAsync();
+
+            var actualPartStorage = CreatePartStorage(newPart.Id, newPartDto.ActualStorageId, "actual");
+            partStorages.Add(actualPartStorage);
+
+            var destinationPartStorage = CreatePartStorage(newPart.Id, newPartDto.DestinationStorageId, "destination");
+            partStorages.Add(destinationPartStorage);
+
+            await dbContext.SaveChangesAsync();
+        }
+
+        private PartStorage CreatePartStorage(int partId, int storageId, string type)
+        {
+            var partStorage = new PartStorage()
+            {
+                PartId = partId,
+                StorageId = storageId,
+                Type = type
+            };
+            return partStorage;
+        }
+
+        public async Task UpdatePartAsync(int partId, UpdateOrderDto storageAfterChange)
         {
             var newPartStorage = new PartStorage()
             {
@@ -59,6 +92,15 @@ namespace PMF.API.Services
 
             dbContext.PartStorage.Add(newPartStorage);
             dbContext.PartStorage.Remove(oldStoragePart);
+            await dbContext.SaveChangesAsync();
+        }
+
+        public async Task DeletePartsAsync(int[] partsId)
+        {
+            var partsToDelete = dbContext
+                .Part.Where(t => partsId.Contains(t.Id));
+
+            dbContext.RemoveRange(partsToDelete);
             await dbContext.SaveChangesAsync();
         }
     }
