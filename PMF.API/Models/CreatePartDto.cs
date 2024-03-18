@@ -7,7 +7,7 @@
         public int Quantity { get; set; }
         public string Material { get; set; }
         public int SurfaceId { get; set; }
-        public byte[] File { get; set; }
+        public IFormFile File { get; set; }
         public int ActualStorageId { get; set; }
         public int DestinationStorageId { get; set; }
         public int OrderId { get; set; }

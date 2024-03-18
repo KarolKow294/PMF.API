@@ -28,7 +28,7 @@ namespace PMF.API.Controllers
         }
 
         [HttpPost("part")]
-        public async Task<ActionResult> CreatePartAsync([FromBody] CreatePartDto newPartDto)
+        public async Task<ActionResult> CreatePartAsync([FromForm] CreatePartDto newPartDto)
         {
             await orderService.CreatePartAsync(newPartDto);
 

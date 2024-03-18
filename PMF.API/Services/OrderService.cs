@@ -44,6 +44,8 @@ namespace PMF.API.Services
         public async Task CreatePartAsync(CreatePartDto newPartDto)
         {
             var newPart = mapper.Map<Part>(newPartDto);
+            var file = ConvertFormFileToByteArray(newPartDto);
+            newPart.Drawing = file;
             dbContext.Part.Add(newPart);
             await dbContext.SaveChangesAsync();
 
@@ -61,6 +63,15 @@ namespace PMF.API.Services
             partStorages.Add(destinationPartStorage);
 
             await dbContext.SaveChangesAsync();
+        }
+
+        private byte[] ConvertFormFileToByteArray(CreatePartDto newPartDto)
+        {
+            using var fileStream = newPartDto.File.OpenReadStream();
+            byte[] file = new byte[newPartDto.File.Length];
+            fileStream.Read(file, 0, (int)file.Length);
+
+            return file;
         }
 
         private PartStorage CreatePartStorage(int partId, int storageId, string type)

@@ -16,8 +16,7 @@ namespace PMF.API
                 .ForMember(d => d.ActualStorage, c => c.MapFrom(p => p.Storages.FirstOrDefault().Name))
                 .ForMember(d => d.DestinationStorage, c => c.MapFrom(p => p.Storages.LastOrDefault().Name));
 
-            CreateMap<CreatePartDto, Part>()
-                .ForMember(p => p.Drawing, c => c.MapFrom(d => d.File));
+            CreateMap<CreatePartDto, Part>();
 
             CreateMap<Order, OrderDto>()
                 .ForMember(d => d.Parts, c => c.MapFrom(p => p.Parts));
