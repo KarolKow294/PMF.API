@@ -57,10 +57,10 @@ namespace PMF.API.Services
                 .ToListAsync();
 
             var actualPartStorage = CreatePartStorage(newPart.Id, newPartDto.ActualStorageId, "actual");
-            partStorages.Add(actualPartStorage);
+            dbContext.PartStorage.Add(actualPartStorage);
 
             var destinationPartStorage = CreatePartStorage(newPart.Id, newPartDto.DestinationStorageId, "destination");
-            partStorages.Add(destinationPartStorage);
+            dbContext.PartStorage.Add(destinationPartStorage);
 
             await dbContext.SaveChangesAsync();
         }
@@ -108,10 +108,10 @@ namespace PMF.API.Services
 
         public async Task DeletePartsAsync(int[] partsId)
         {
-            var partsToDelete = dbContext
-                .Part.Where(t => partsId.Contains(t.Id));
+            var partsToDelete = await dbContext
+                .Part.Where(t => partsId.Contains(t.Id)).ToListAsync();
 
-            dbContext.RemoveRange(partsToDelete);
+            dbContext.Part.RemoveRange(partsToDelete);
             await dbContext.SaveChangesAsync();
         }
     }
