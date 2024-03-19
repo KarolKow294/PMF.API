@@ -50,7 +50,7 @@ namespace PMF.API.Services
 
             if (newPartDto.File is not null)
             {
-                var file = ConvertFormFileToByteArray(newPartDto);
+                var file = ConvertFormFileToByteArray(newPartDto.File);
                 newPart.Drawing = file;
             }
             dbContext.Part.Add(newPart);
@@ -126,10 +126,10 @@ namespace PMF.API.Services
             await dbContext.SaveChangesAsync();
         }
 
-        private byte[] ConvertFormFileToByteArray(CreatePartDto newPartDto)
+        private byte[] ConvertFormFileToByteArray(IFormFile formFile)
         {
-            using var fileStream = newPartDto.File.OpenReadStream();
-            byte[] file = new byte[newPartDto.File.Length];
+            using var fileStream = formFile.OpenReadStream();
+            byte[] file = new byte[formFile.Length];
             fileStream.Read(file, 0, (int)file.Length);
 
             return file;
@@ -164,6 +164,14 @@ namespace PMF.API.Services
 
             dbContext.PartStorage.Add(newPartStorage);
             dbContext.PartStorage.Remove(oldStoragePart);
+            await dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateDrawingAsync(int partId, IFormFile drawing)
+        {
+            var convertedDrawing = ConvertFormFileToByteArray(drawing);
+            var part = await dbContext.Part.FirstOrDefaultAsync(p => p.Id == partId);
+            part.Drawing = convertedDrawing;
             await dbContext.SaveChangesAsync();
         }
 

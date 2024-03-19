@@ -53,6 +53,16 @@ namespace PMF.API.Controllers
             return Ok();
         }
 
+        [HttpPut("part/drawing/{id}")]
+        public async Task<ActionResult> UpdateDrawingAsync([FromForm] IFormFile drawing, [FromRoute] int id)
+        {
+            if (drawing is null)
+                return BadRequest("File is empty");
+
+            await orderService.UpdateDrawingAsync(id, drawing);
+            return Ok();
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteOrderAsync([FromRoute] int id)
         {
