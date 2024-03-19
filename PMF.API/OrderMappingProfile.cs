@@ -18,6 +18,10 @@ namespace PMF.API
 
             CreateMap<CreatePartDto, Part>();
 
+            CreateMap<CsvPartDto, Part>()
+                .ForMember(p => p.SurfaceId, c => c.MapFrom(d => d.Surface == "Malowana"
+                ? SurfaceType.Painted : SurfaceType.Galvanised));
+
             CreateMap<Order, OrderDto>()
                 .ForMember(d => d.Parts, c => c.MapFrom(p => p.Parts));
         }

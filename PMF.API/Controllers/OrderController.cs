@@ -35,6 +35,16 @@ namespace PMF.API.Controllers
             return Created();
         }
 
+        [HttpPost("csv")]
+        public async Task<ActionResult> CreateOrdersAsync([FromForm] IFormFile file)
+        {
+            if (file is null)
+                return BadRequest("File is empty");
+
+            await orderService.CreateOrdersAsync(file);
+            return Created();
+        }
+
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdatePartAsync([FromBody] UpdateOrderDto storageAfterChange, [FromRoute] int id)
         {

@@ -7,6 +7,7 @@ namespace PMF.API.Services
         Task<List<OrderDto>> GetAllAsync();
         Task<List<PartDto>> GetPartsByOrderIdAsync(int orderId);
         Task CreatePartAsync(CreatePartDto newPartDto);
+        Task CreateOrdersAsync(IFormFile file);
         Task UpdatePartAsync(int partId, UpdateOrderDto storageAfterChange);
         Task DeletePartsAsync(int[] partsId);
     }

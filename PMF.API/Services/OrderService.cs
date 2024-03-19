@@ -4,10 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client.Extensions.Msal;
 using PMF.API.Entities;
 using PMF.API.Models;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace PMF.API.Services
 {
-    public class OrderService(PmfDbContext dbContext, IMapper mapper, QrCodeService qrService) : IOrderService
+    public class OrderService(PmfDbContext dbContext, IMapper mapper, QrCodeService qrService, CsvService csvService) : IOrderService
     {
         public async Task<List<OrderDto>> GetAllAsync()
         {
@@ -63,6 +65,61 @@ namespace PMF.API.Services
             dbContext.PartStorage.Add(destinationPartStorage);
 
             await dbContext.SaveChangesAsync();
+        }
+
+        public async Task CreateOrdersAsync(IFormFile file)
+        {
+            var csvPartDtos = csvService.GetDataFromCsv(file);
+
+            var orders = GetOrders(csvPartDtos);
+            await dbContext.Order.AddRangeAsync(orders);
+            await dbContext.SaveChangesAsync();
+
+            var partStorages = await dbContext.PartStorage.ToListAsync();
+            var storages = await dbContext.Storage.ToListAsync();
+
+            foreach (var partDto in csvPartDtos)
+            {
+                var part = mapper.Map<Part>(partDto);
+                part.OrderId = orders.SingleOrDefault(o => o.Number == partDto.OrderNumber).Id;
+
+                var qrCodeData = qrService.GenerateQrCodeData(part);
+                part.QrCodeData = qrCodeData;
+
+                dbContext.Part.Add(part);
+                await dbContext.SaveChangesAsync();
+
+                var actualPartStorageId = storages.FirstOrDefault(s => s.Name == partDto.ActualStorage).Id;
+                var actualPartStorage = CreatePartStorage(part.Id, actualPartStorageId, "actual");
+                dbContext.PartStorage.Add(actualPartStorage);
+
+                var destinationPartStorageId = storages.FirstOrDefault(s => s.Name == partDto.DestinationStorage).Id;
+                var destinationPartStorage = CreatePartStorage(part.Id, destinationPartStorageId, "destination");
+                dbContext.PartStorage.Add(destinationPartStorage);
+            }
+            await dbContext.SaveChangesAsync();
+        }
+
+        private List<Order> GetOrders(List<CsvPartDto> csvPartDtos)
+        {
+            var orderNumbers = csvPartDtos
+                .OrderBy(p => p.OrderNumber)
+                .Select(p => p.OrderNumber)
+                .Distinct()
+                .ToList();
+
+            var orders = new List<Order>();
+
+            foreach (var orderNumber in orderNumbers)
+            {
+                var order = new Order()
+                {
+                    Name = csvPartDtos.FirstOrDefault(p => p.OrderNumber == orderNumber).OrderName,
+                    Number = orderNumber
+                };
+                orders.Add(order);
+            }
+            return orders;
         }
 
         private byte[] ConvertFormFileToByteArray(CreatePartDto newPartDto)
