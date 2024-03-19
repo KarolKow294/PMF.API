@@ -53,6 +53,14 @@ namespace PMF.API.Controllers
             return Ok();
         }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteOrderAsync([FromRoute] int id)
+        {
+            await orderService.DeleteOrderAsync(id);
+
+            return NoContent();
+        }
+
         [HttpDelete]
         public async Task<ActionResult> DeletePartsAsync([FromBody] int[] partsId)
         {
