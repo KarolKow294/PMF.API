@@ -8,6 +8,8 @@ namespace PMF.API.Entities
         public DbSet<Part> Part { get; set; }
         public DbSet<Storage> Storage { get; set; }
         public DbSet<PartStorage> PartStorage { get; set; }
+        public DbSet<User> User { get; set; }
+        public DbSet<Role> Role { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -43,6 +45,18 @@ namespace PMF.API.Entities
             });
 
             modelBuilder.Entity<Storage>()
+                .Property(u => u.Name)
+                .IsRequired();
+
+
+            modelBuilder.Entity<User>(eb =>
+            {
+                eb.Property(u => u.Email).IsRequired();
+                eb.Property(u => u.PasswordHash).IsRequired();
+                eb.Property(u => u.RoleId).HasDefaultValue(1);
+            });
+
+            modelBuilder.Entity<Role>()
                 .Property(u => u.Name)
                 .IsRequired();
         }

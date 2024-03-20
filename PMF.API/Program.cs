@@ -1,7 +1,12 @@
 
 using AutoMapper;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PMF.API.Entities;
+using PMF.API.Models;
+using PMF.API.Models.Validators;
 using PMF.API.Services;
 using System.Reflection;
 
@@ -15,10 +20,12 @@ namespace PMF.API
 
             // Add services to the container.
             builder.Services.AddAuthorization();
-            builder.Services.AddControllers();
-
+            builder.Services.AddControllers().AddFluentValidation();
+            builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+            builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IStorageService, StorageService>();
+            builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<CsvService>();
             builder.Services.AddSingleton<QrCodeService>();
             builder.Services.AddSingleton(provider => new MapperConfiguration(cfg =>
