@@ -45,6 +45,7 @@ namespace PMF.API
             builder.Services.AddControllers().AddFluentValidation();
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
+            builder.Services.AddScoped<IValidator<ChangePasswordDto>, ChangePasswordDtoValidator>();
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IStorageService, StorageService>();
             builder.Services.AddScoped<IAccountService, AccountService>();

@@ -9,7 +9,7 @@ using System.Text;
 
 namespace PMF.API.Services
 {
-    public class AccountService(PmfDbContext context, IPasswordHasher<User> passwordHasher,
+    public class AccountService(PmfDbContext dbContext, IPasswordHasher<User> passwordHasher,
         AutenticationSettings authenticationSettings) : IAccountService
     {
         public async Task RegisterUserAsync(RegisterUserDto user)
@@ -23,13 +23,13 @@ namespace PMF.API.Services
             var hashedPassword = passwordHasher.HashPassword(newUser, user.Password);
 
             newUser.PasswordHash = hashedPassword;
-            context.User.Add(newUser);
-            await context.SaveChangesAsync();
+            dbContext.User.Add(newUser);
+            await dbContext.SaveChangesAsync();
         }
 
         public async Task<string> GenerateJwtAsync(LoginDto userDto)
         {
-            var user = await context.User
+            var user = await dbContext.User
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Email == userDto.Email);
 
@@ -60,6 +60,16 @@ namespace PMF.API.Services
             var tokenHandler = new JwtSecurityTokenHandler();
 
             return tokenHandler.WriteToken(token);
+        }
+
+        public async Task ChangePassword(ChangePasswordDto data)
+        {
+            var user = await dbContext.User.FirstOrDefaultAsync(u => u.Id == data.Id);
+
+            var hashedPassword = passwordHasher.HashPassword(user, data.Password);
+            user.PasswordHash = hashedPassword;
+
+            await dbContext.SaveChangesAsync();
         }
     }
 }

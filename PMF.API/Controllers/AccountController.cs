@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PMF.API.Models;
 using PMF.API.Services;
 
@@ -20,6 +21,13 @@ namespace PMF.API.Controllers
         {
             string token = await accountService.GenerateJwtAsync(user);
             return Ok(token);
+        }
+
+        [HttpPost("password")]
+        public async Task<ActionResult> ChangePasswordAsync([FromBody] ChangePasswordDto data)
+        {
+            await accountService.ChangePassword(data);
+            return Ok();
         }
     }
 }

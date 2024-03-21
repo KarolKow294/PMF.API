@@ -9,6 +9,7 @@ namespace PMF.API.Controllers
 {
     [Route("api/orders")]
     [ApiController]
+    [Authorize]
     public class OrderController(IOrderService orderService) : ControllerBase
     {
         [HttpGet]
@@ -28,6 +29,7 @@ namespace PMF.API.Controllers
         }
 
         [HttpPost("part")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> CreatePartAsync([FromForm] CreatePartDto newPartDto)
         {
             await orderService.CreatePartAsync(newPartDto);
