@@ -4,6 +4,7 @@ namespace PMF.API.Services
 {
     public interface IAccountService
     {
-        Task RegisterUser(RegisterUserDto user);
+        Task RegisterUserAsync(RegisterUserDto user);
+        Task<string> GenerateJwtAsync(LoginDto userDto);
     }
 }

@@ -9,17 +9,17 @@ namespace PMF.API.Controllers
     public class AccountController(IAccountService accountService) : ControllerBase
     {
         [HttpPost("register")]
-        public async Task<ActionResult> RegisterUser([FromBody] RegisterUserDto user)
+        public async Task<ActionResult> RegisterUserAsync([FromBody] RegisterUserDto user)
         {
-            await accountService.RegisterUser(user);
+            await accountService.RegisterUserAsync(user);
             return Ok();
         }
 
         [HttpPost("login")]
-        public async Task <ActionResult> Login([FromBody] LoginDto user)
+        public async Task <ActionResult> LoginAsync([FromBody] LoginDto user)
         {
-            //string token = accountService.GenerateJwt(user);
-            return Ok();
+            string token = await accountService.GenerateJwtAsync(user);
+            return Ok(token);
         }
     }
 }

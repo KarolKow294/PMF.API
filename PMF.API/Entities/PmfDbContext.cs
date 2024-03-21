@@ -54,6 +54,7 @@ namespace PMF.API.Entities
                 eb.Property(u => u.Email).IsRequired();
                 eb.Property(u => u.PasswordHash).IsRequired();
                 eb.Property(u => u.RoleId).HasDefaultValue(1);
+                eb.Property(u => u.IsConfirmed).HasDefaultValue(false);
             });
 
             modelBuilder.Entity<Role>()

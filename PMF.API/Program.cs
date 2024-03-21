@@ -4,11 +4,13 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PMF.API.Entities;
 using PMF.API.Models;
 using PMF.API.Models.Validators;
 using PMF.API.Services;
 using System.Reflection;
+using System.Text;
 
 namespace PMF.API
 {
@@ -18,7 +20,27 @@ namespace PMF.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            var authenticationSettings = new AutenticationSettings();
+
+            builder.Configuration.GetSection("Authentication").Bind(authenticationSettings);
+            builder.Services.AddSingleton(authenticationSettings);
+            builder.Services.AddAuthentication(option =>
+            {
+                option.DefaultAuthenticateScheme = "Bearer";
+                option.DefaultScheme = "Bearer";
+                option.DefaultChallengeScheme = "Bearer";
+            }).AddJwtBearer(cfg =>
+            {
+                cfg.RequireHttpsMetadata = false;
+                cfg.SaveToken = true;
+                cfg.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = authenticationSettings.JwtIssuer,
+                    ValidAudience = authenticationSettings.JwtIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey)),
+                };
+            });
+
             builder.Services.AddAuthorization();
             builder.Services.AddControllers().AddFluentValidation();
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
@@ -49,7 +71,6 @@ namespace PMF.API
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -57,7 +78,7 @@ namespace PMF.API
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
             app.UseCors("FrontEndClient");
