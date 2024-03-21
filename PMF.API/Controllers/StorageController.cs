@@ -7,7 +7,6 @@ namespace PMF.API.Controllers
 {
     [Route("api/storages")]
     [ApiController]
-    [Authorize]
     public class StorageController(IStorageService storageService) : ControllerBase
     {
         [HttpGet]
@@ -16,6 +15,14 @@ namespace PMF.API.Controllers
             var storages = await storageService.GetAllAsync();
 
             return Ok(storages);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<string>> GetActualStorageNameAsync([FromRoute] int id)
+        {
+            var storageName = await storageService.GetActualStorageNameAsync(id);
+
+            return Ok(storageName);
         }
     }
 }

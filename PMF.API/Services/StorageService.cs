@@ -10,10 +10,23 @@ namespace PMF.API.Services
         public async Task<List<Storage>> GetAllAsync()
         {
             var storages = await dbContext
-            .Storage
-            .ToListAsync();
+                .Storage
+                .ToListAsync();
 
             return storages;
+        }
+
+        public async Task<string> GetActualStorageNameAsync(int partId)
+        {            
+            var partStorage = await dbContext
+                .PartStorage
+                .FirstOrDefaultAsync(p => p.PartId == partId && p.Type == "actual");
+
+            var storage = await dbContext
+                .Storage
+                .FirstOrDefaultAsync(s => s.Id == partStorage.StorageId);
+
+            return storage.Name;
         }
     }
 }
